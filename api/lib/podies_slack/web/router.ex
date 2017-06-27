@@ -7,5 +7,7 @@ defmodule PodiesSlack.Web.Router do
 
   scope "/api", PodiesSlack.Web do
     pipe_through :api
+
+    resources "/users", UserController, except: [:new, :edit]
   end
 end

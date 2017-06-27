@@ -17,4 +17,16 @@ defmodule PodiesSlack.Web.FallbackController do
     |> put_status(:not_found)
     |> render(PodiesSlack.Web.ErrorView, :"404")
   end
+
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> render(PodiesSlack.Web.SessionView, "error.json")
+  end
+
+  def call(conn, {:error, _reason}) do
+    conn
+    |> put_status(:unauthorized)
+    |> render(PodiesSlack.Web.SessionView, "error.json")
+  end
 end

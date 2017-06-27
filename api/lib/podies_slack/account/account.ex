@@ -55,24 +55,8 @@ defmodule PodiesSlack.Account do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a user.
-
-  ## Examples
-
-      iex> update_user(user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user(user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.registration_changeset(attrs)
-    |> Repo.update()
-  end
-
+ 
+  
   @doc """
   Deletes a User.
 
@@ -100,5 +84,21 @@ defmodule PodiesSlack.Account do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  def authenticate_user(%{"email" => email, "password" => password }) do
+    user = Repo.get_by(User, email: String.downcase(email))
+
+    case check_password(user, password) do
+      true -> {:ok, user}
+      _ -> {:error, :unauthorized}
+    end
+  end
+
+  defp check_password(user, password) do
+    case user do
+      nil -> Comeonin.Bcrypt.dummy_checkpw()
+      _ -> Comeonin.Bcrypt.checkpw(password, user.password_hash)
+    end
   end
 end
